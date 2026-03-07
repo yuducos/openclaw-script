@@ -1,11 +1,11 @@
-```powershell
 Write-Host 'OpenClaw Gateway Deploy' -ForegroundColor Cyan
 $ErrorActionPreference='Stop'
 $d="$env:USERPROFILE\.openclaw\workspace"
 New-Item -Path $d -ItemType Directory -Force -EA SilentlyContinue
 
 $f1="$d\gateway-simple.ps1"
-'function Start-OG{param([switch]$s);$e=gps node -EA SilentlyContinue|?{$_.CommandLine-like"*openclaw*"};if($e){Write-Host "Already running (PID:$($e.Id))" -Fore Yellow;return};$w=if($s){"Normal"}else{"Hidden"};Start-Process "$env:APPDATA\npm\openclaw.cmd" -ArgumentList "gateway","run","--compact" -WindowStyle $w -WorkingDirectory $env:USERPROFILE;Write-Host "Started" -Fore Green;Start-Sleep 2;openclaw gateway status}'|Out-File $f1
+# Start-OG with retry logic to wait for Gateway ready
+'function Start-OG{param([switch]$s);$e=gps node -EA SilentlyContinue|?{$_.CommandLine-like"*openclaw*"};if($e){Write-Host "Already running (PID:$($e.Id))" -Fore Yellow;return};$w=if($s){"Normal"}else{"Hidden"};Start-Process "$env:APPDATA\npm\openclaw.cmd" -ArgumentList "gateway","run","--compact" -WindowStyle $w -WorkingDirectory $env:USERPROFILE;Write-Host "Starting..." -Fore Green;for($i=0;$i-lt 5;$i++){Start-Sleep 1;$st=openclaw gateway status 2>&1|Out-String;if($st-match"ok"-or$st-match"Listening"){Write-Host "Ready!" -Fore Green;openclaw gateway status;return}};Write-Host "Starting, check with ogstatus later" -Fore Yellow}'|Out-File $f1
 'function Stop-OG{openclaw gateway stop;gps node -EA SilentlyContinue|?{$_.CommandLine-like"*openclaw*"}|Stop-Process -Force;Write-Host "Stopped" -Fore Green}'|Add-Content $f1
 'function Restart-OG{Stop-OG;Start-Sleep 2;Start-OG}'|Add-Content $f1
 'function Status-OG{openclaw gateway status}'|Add-Content $f1
