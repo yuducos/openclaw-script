@@ -9,7 +9,7 @@ $f1="$d\gateway-simple.ps1"
 'function Stop-OG{openclaw gateway stop;gps node -EA SilentlyContinue|?{$_.CommandLine-like"*openclaw*"}|Stop-Process -Force;Write-Host "Stopped" -Fore Green}'|Add-Content $f1
 'function Restart-OG{Stop-OG;Start-Sleep 2;Start-OG}'|Add-Content $f1
 'function Status-OG{openclaw gateway status}'|Add-Content $f1
-'function Enable-OGAutostart{$tn="OpenClaw Gateway";schtasks /Query /TN $tn 2>$null;if($?){Write-Host "Exists" -Fore Yellow;return};schtasks /Create /TN $tn /TR "powershell.exe -WindowStyle Hidden -Command Start-Process -FilePath ''%APPDATA%\npm\openclaw.cmd'' -ArgumentList ''gateway'',''run'',''--compact'' -WindowStyle Hidden" /SC ONLOGON /DELAY 00:30 /RL HIGHEST /F|Out-Null;if($?){Write-Host "Enabled" -Fore Green}else{Write-Host "Failed" -Fore Red}}'|Add-Content $f1
+'function Enable-OGAutostart{$tn="OpenClaw Gateway";schtasks /Query /TN $tn 2>$null;if($?){Write-Host "Exists" -Fore Yellow;return};schtasks /Create /TN $tn /TR "powershell.exe -WindowStyle Hidden -Command Start-Process -FilePath ''%APPDATA%\npm\openclaw.cmd'' -ArgumentList ''gateway'',''run'',''--compact'' -WindowStyle Hidden" /SC ONLOGON /DELAY 0000:30 /RL HIGHEST /F|Out-Null;if($?){Write-Host "Enabled" -Fore Green}else{Write-Host "Failed" -Fore Red}}'|Add-Content $f1
 'function Disable-OGAutostart{schtasks /Delete /TN "OpenClaw Gateway" /F 2>&1|Out-Null;Write-Host "Disabled" -Fore Green}'|Add-Content $f1
 'Set-Alias ogstart Start-OG;Set-Alias ogstop Stop-OG;Set-Alias ogrestart Restart-OG;Set-Alias ogstatus Status-OG;Set-Alias ogenable Enable-OGAutostart;Set-Alias ogdisable Disable-OGAutostart'|Add-Content $f1
 'Write-Host "Commands: ogstart,ogstop,ogrestart,ogstatus,ogenable,ogdisable" -Fore DarkGray'|Add-Content $f1
